@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/plena/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/plena/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/plena",
+  "projects": {
+    "plena": {
+      "type": "application",
+      "root": "apps/plena",
+      "entryFile": "main",
+      "sourceRoot": "apps/plena/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/plena/tsconfig.app.json"
+      }
+    },
+    "access-manager": {
+      "type": "application",
+      "root": "apps/access-manager",
+      "entryFile": "main",
+      "sourceRoot": "apps/access-manager/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/access-manager/tsconfig.app.json"
+      }
+    },
+    "token-manager": {
+      "type": "application",
+      "root": "apps/token-manager",
+      "entryFile": "main",
+      "sourceRoot": "apps/token-manager/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/token-manager/tsconfig.app.json"
+      }
+    }
+  }
+}
