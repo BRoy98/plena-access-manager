@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { TokenManagerModule } from './../src/token-manager.module';
+import { TokenManagerModule } from '../src/app.module';
 
 describe('TokenManagerController (e2e)', () => {
   let app: INestApplication;

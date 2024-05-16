@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AccessManagerModule } from './../src/access-manager.module';
+import { AccessManagerModule } from '../src/app.module';
 
 describe('AccessManagerController (e2e)', () => {
   let app: INestApplication;

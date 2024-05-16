@@ -1,10 +1,22 @@
 import { NestFactory } from '@nestjs/core';
-import { TokenManagerModule } from './token-manager.module';
+import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { Logger, ValidationPipe } from '@nestjs/common';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
-  const app = await NestFactory.create(TokenManagerModule);
+  const app = await NestFactory.create(AppModule);
+
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.REDIS,
+    options: {
+      host: process.env.REDIS_HOST,
+      port: Number(process.env.REDIS_PORT),
+      // username: process.env.REDIS_USER,
+      // password: process.env.REDIS_PASSWORD,
+    },
+  });
+
   const configService = app.get(ConfigService);
 
   const port = configService.get<number>('TOKEN_MANAGER_PORT');
@@ -12,6 +24,8 @@ async function bootstrap() {
 
   app.setGlobalPrefix(globalPrefix);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
+  await app.startAllMicroservices();
   await app.listen(port);
 
   Logger.log(
