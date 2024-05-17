@@ -5,25 +5,27 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateKeyDto } from './dto/create-key.dto';
-import { UpdateKeyDto } from './dto/update-key.dto';
+import { CreateKeyDto } from './dto/request/create-key.request.dto';
+import { UpdateKeyDto } from './dto/request/update-key.request.dto';
 import { Key, KeyDocument } from './schemas/key.schema';
-import { DisableKeyDto } from './dto/disable-key.dto';
+import { DisableKeyDto } from './dto/request/disable-key.request.dto';
+import { GetKeyDetailsDto } from './dto/request/get-key-details.request.dto';
 
 @Injectable()
 export class KeysService {
   constructor(@InjectModel(Key.name) private keyModel: Model<KeyDocument>) {}
 
   async create(createKeyDto: CreateKeyDto): Promise<Key> {
-    return this.keyModel.create(createKeyDto);
+    const createdKey = new this.keyModel(createKeyDto);
+    return createdKey.save();
   }
 
   async findAll(): Promise<Key[]> {
-    return this.keyModel.find();
+    return this.keyModel.find().exec();
   }
 
   async findOne(id: string): Promise<Key> {
-    return this.keyModel.findById(id);
+    return this.keyModel.findById(id).exec();
   }
 
   async update(id: string, updateKeyDto: UpdateKeyDto): Promise<Key> {
@@ -34,7 +36,7 @@ export class KeysService {
     return this.keyModel.findByIdAndDelete(id);
   }
 
-  async findByKey(key: string): Promise<Key> {
+  async findByKey(key: string): Promise<KeyDocument> {
     const keyDocument = await this.keyModel.findOne({ key });
     if (!keyDocument) {
       throw new NotFoundException('Key not found');
@@ -42,16 +44,15 @@ export class KeysService {
     return keyDocument;
   }
 
-  async disableKey(disableKeyDto: DisableKeyDto): Promise<Key> {
-    const keyDocument = await this.keyModel.findOne({ key: disableKeyDto.key });
+  async getKeyDetails(getKeyDetailsDto: GetKeyDetailsDto): Promise<Key> {
+    return this.findByKey(getKeyDetailsDto.key);
+  }
 
-    if (!keyDocument) {
-      throw new NotFoundException('Key not found');
-    }
+  async disableKey(disableKeyDto: DisableKeyDto): Promise<Key> {
+    const keyDocument = await this.findByKey(disableKeyDto.key);
     if (keyDocument.disabled) {
       throw new BadRequestException('Key already disabled');
     }
-
     keyDocument.disabled = true;
     return keyDocument.save();
   }

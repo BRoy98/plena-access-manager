@@ -27,6 +27,10 @@ export class TokensService {
       const response = await firstValueFrom(
         this.client.send({ cmd: 'validate_key' }, { key }),
       );
+
+      if (!response) {
+        throw new BadRequestException('Invalid key');
+      }
       return response;
     } catch (error) {
       throw new BadRequestException('Invalid or expired key');
@@ -47,8 +51,6 @@ export class TokensService {
     if (keyDetails.disabled) {
       throw new BadRequestException('Key is disabled');
     }
-
-    // Here you can add rate limit checking logic if necessary
 
     return this.findTokenByKey(requestTokenDto.key);
   }

@@ -7,14 +7,14 @@ import {
   Delete,
   Put,
   UseGuards,
-  BadRequestException,
 } from '@nestjs/common';
-import { CreateKeyDto } from './dto/create-key.dto';
-import { UpdateKeyDto } from './dto/update-key.dto';
+import { MessagePattern } from '@nestjs/microservices';
+import { CreateKeyDto } from './dto/request/create-key.request.dto';
+import { UpdateKeyDto } from './dto/request/update-key.request.dto';
 import { KeysService } from './keys.service';
 import { Key } from './schemas/key.schema';
 import { JwtAuthGuard } from '../admin/jwt-auth.guard';
-import { DisableKeyDto } from './dto/disable-key.dto';
+import { GetKeyDetailsDto } from './dto/request/get-key-details.request.dto';
 
 @Controller('keys')
 export class KeysController {
@@ -54,17 +54,24 @@ export class KeysController {
   }
 
   @Post('details')
-  async getDetails(@Body() body: { key: string }): Promise<Key> {
-    const keyDocument = await this.keysService.findByKey(body.key);
-    if (keyDocument.disabled) {
-      throw new BadRequestException('Key is disabled');
-    }
-    return keyDocument;
+  getKeyDetails(@Body() getKeyDetailsDto: GetKeyDetailsDto): Promise<Key> {
+    return this.keysService.getKeyDetails(getKeyDetailsDto);
   }
 
-  // User Query: Disable key
-  @Post('disable')
-  disable(@Body() disableKeyDto: DisableKeyDto): Promise<Key> {
-    return this.keysService.disableKey(disableKeyDto);
+  @Post(':id/disable')
+  disableKey(@Param('id') id: string): Promise<Key> {
+    return this.keysService.disableKey({ key: id });
+  }
+
+  @MessagePattern({ cmd: 'validate_key' })
+  async validateKey(data: { key: string }): Promise<any> {
+    const keyDocument = await this.keysService.findByKey(data.key);
+    return {
+      key: keyDocument.key,
+      userId: keyDocument.userId,
+      rateLimit: keyDocument.rateLimit,
+      expiration: keyDocument.expiration,
+      disabled: keyDocument.disabled,
+    };
   }
 }

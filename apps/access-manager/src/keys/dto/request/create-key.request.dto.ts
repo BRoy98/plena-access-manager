@@ -16,4 +16,8 @@ export class CreateKeyDto {
   @IsString()
   @IsNotEmpty()
   readonly createdBy: string;
+
+  @IsString()
+  @IsNotEmpty()
+  readonly userId: string;
 }

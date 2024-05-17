@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { AdminService } from './admin.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AdminController } from './admin.controller';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
   ],
+  controllers: [AdminController],
   providers: [JwtStrategy, AdminService],
   exports: [JwtModule, AdminService],
 })

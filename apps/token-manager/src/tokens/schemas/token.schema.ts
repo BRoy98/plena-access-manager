@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 
-export type TokenDocument = Token & Document;
+export type TokenDocument = HydratedDocument<Token>;
 
 @Schema()
 export class Token {

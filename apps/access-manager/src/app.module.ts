@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AdminModule } from './admin/admin.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { KeysModule } from './keys/keys.module';
 import { RedisPubSubService } from './common/redis-pubsub.service';
 
@@ -10,7 +10,14 @@ import { RedisPubSubService } from './common/redis-pubsub.service';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    MongooseModule.forRoot(process.env.MONGODB_URI),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        uri: config.get<string>('MONGODB_URI'),
+        retryAttempts: 10,
+      }),
+    }),
     AdminModule,
     KeysModule,
   ],

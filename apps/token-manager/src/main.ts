@@ -6,18 +6,16 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.REDIS,
     options: {
-      host: process.env.REDIS_HOST,
-      port: Number(process.env.REDIS_PORT),
-      // username: process.env.REDIS_USER,
-      // password: process.env.REDIS_PASSWORD,
+      name: 'token-service',
+      host: configService.get<string>('REDIS_HOST'),
+      port: configService.get<number>('REDIS_PORT'),
     },
   });
-
-  const configService = app.get(ConfigService);
 
   const port = configService.get<number>('TOKEN_MANAGER_PORT');
   const globalPrefix = 'v1';

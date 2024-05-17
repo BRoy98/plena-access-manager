@@ -11,4 +11,9 @@ export class TokensController {
   async requestToken(@Body() requestTokenDto: RequestTokenDto): Promise<Token> {
     return this.tokensService.requestToken(requestTokenDto);
   }
+
+  @Post('validate')
+  async validateKey(@Body() body: { key: string }): Promise<any> {
+    return this.tokensService.validateKey(body.key);
+  }
 }

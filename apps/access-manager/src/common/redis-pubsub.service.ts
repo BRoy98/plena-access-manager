@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   ClientProxy,
   ClientProxyFactory,
@@ -9,14 +10,15 @@ import {
 export class RedisPubSubService {
   private client: ClientProxy;
 
-  constructor() {
+  constructor(
+    @Inject(ConfigService)
+    private config: ConfigService,
+  ) {
     this.client = ClientProxyFactory.create({
       transport: Transport.REDIS,
       options: {
-        host: process.env.REDIS_HOST,
-        port: Number(process.env.REDIS_PORT),
-        // username: process.env.REDIS_USER,
-        // password: process.env.REDIS_PASSWORD,
+        host: config.get<string>('REDIS_HOST'),
+        port: config.get<number>('REDIS_PORT'),
       },
     });
   }

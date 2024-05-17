@@ -19,6 +19,9 @@ export class Key {
 
   @Prop({ default: false })
   disabled: boolean;
+
+  @Prop({ required: true })
+  userId: string;
 }
 
 export const KeySchema = SchemaFactory.createForClass(Key);

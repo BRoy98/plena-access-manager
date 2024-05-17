@@ -37,13 +37,13 @@
         "tsConfigPath": "apps/token-manager/tsconfig.app.json"
       }
     },
-    "db": {
+    "logging": {
       "type": "library",
-      "root": "libs/db",
+      "root": "libs/logging",
       "entryFile": "index",
-      "sourceRoot": "libs/db/src",
+      "sourceRoot": "libs/logging/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/db/tsconfig.lib.json"
+        "tsConfigPath": "libs/logging/tsconfig.lib.json"
       }
     }
   }

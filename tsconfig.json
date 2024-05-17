@@ -18,8 +18,18 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@db": ["libs/db/src"],
-      "@db/*": ["libs/db/src/*"]
+      "@db": [
+        "libs/db/src"
+      ],
+      "@db/*": [
+        "libs/db/src/*"
+      ],
+      "@logging": [
+        "libs/logging/src"
+      ],
+      "@logging/*": [
+        "libs/logging/src/*"
+      ]
     }
   }
 }

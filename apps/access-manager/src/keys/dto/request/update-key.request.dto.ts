@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsDateString, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsDateString } from 'class-validator';
 
 export class UpdateKeyDto {
   @IsNumber()
@@ -8,8 +8,4 @@ export class UpdateKeyDto {
   @IsDateString()
   @IsOptional()
   readonly expiration?: Date;
-
-  @IsString()
-  @IsOptional()
-  readonly createdBy?: string;
 }

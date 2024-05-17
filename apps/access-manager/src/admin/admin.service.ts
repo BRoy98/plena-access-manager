@@ -1,17 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { LoginResponseDto } from './dto/response/login.response.dto';
 
 @Injectable()
 export class AdminService {
   constructor(private readonly jwtService: JwtService) {}
 
-  async login(username: string, password: string): Promise<string> {
-    // For simplicity, we're assuming a hardcoded username and password.
-    // In a real application, you should use a user database.
+  async login(username: string, password: string): Promise<LoginResponseDto> {
+    // For simplicity, I'm assuming a hardcoded username and password.
+
+    let payload = {};
     if (username === 'admin' && password === 'password') {
-      const payload = { username };
-      return this.jwtService.sign(payload);
+      payload = { username, role: 'ADMIN' };
+    } else if (username === 'user' && password === 'password') {
+      payload = { username, role: 'USER' };
+    } else {
+      throw new UnauthorizedException('Invalid credentials');
     }
-    throw new Error('Invalid credentials');
+
+    return {
+      accessToken: this.jwtService.sign(payload),
+    };
   }
 }

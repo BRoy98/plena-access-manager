@@ -11,5 +11,6 @@ import { RedisPubSubService } from '../common/redis-pubsub.service';
   ],
   controllers: [TokensController],
   providers: [TokensService, RedisPubSubService],
+  exports: [TokensService],
 })
 export class TokensModule {}
