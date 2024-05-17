@@ -6,9 +6,10 @@ import { RedisPubSubService } from './common/redis-pubsub.service';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CustomThrottlerGuard } from './common/custom-throttler.guard';
-import { ThrottlerStorageRedisService } from 'nestjs-throttler-storage-redis';
+// import { ThrottlerStorageRedisService } from 'nestjs-throttler-storage-redis';
 import { TokenAccessLoggingMiddleware } from '@logging/logging.middleware';
 import { LoggingModule } from '@logging';
+import { ThrottlerStorageRedisService } from 'nestjs-throttler-storage-redis';
 
 @Module({
   imports: [
@@ -29,8 +30,8 @@ import { LoggingModule } from '@logging';
       useFactory: (config: ConfigService) => ({
         throttlers: [
           {
-            ttl: 60000,
-            limit: 10,
+            ttl: config.get<number>('THROTTLER_TTL') || 60000,
+            limit: config.get<number>('THROTTLER_GLOBAL_LIMIT') || 100,
           },
         ],
         storage: new ThrottlerStorageRedisService({

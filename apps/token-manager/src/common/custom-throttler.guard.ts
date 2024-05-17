@@ -1,15 +1,20 @@
-import { Injectable, ExecutionContext, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  ExecutionContext,
+  Inject,
+  UnauthorizedException,
+} from '@nestjs/common';
 import {
   InjectThrottlerOptions,
   InjectThrottlerStorage,
   ThrottlerException,
   ThrottlerGuard,
   ThrottlerModuleOptions,
-  ThrottlerOptions,
   ThrottlerStorage,
 } from '@nestjs/throttler';
 import { Reflector } from '@nestjs/core';
 import { TokensService } from '../tokens/tokens.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CustomThrottlerGuard extends ThrottlerGuard {
@@ -20,39 +25,40 @@ export class CustomThrottlerGuard extends ThrottlerGuard {
     protected readonly storageService: ThrottlerStorage,
     protected readonly reflector: Reflector,
     @Inject(TokensService) private tokensService: TokensService,
+    @Inject(ConfigService) private configService: ConfigService,
   ) {
     super(options, storageService, reflector);
   }
 
   protected async getTracker(context: ExecutionContext): Promise<string> {
-    const key = context.getArgByIndex(0).body.key;
-    return key;
+    const request = context.switchToHttp().getRequest<Request>();
+    const apiKey = request.headers['x-api-key'] as string;
+
+    return apiKey;
   }
 
-  protected generateKey(
-    context: ExecutionContext,
-    suffix: string,
-    name: string,
-  ): string {
-    const prefix = `${context.getClass().name}-${context.getHandler().name}-${name}`;
-    const key = this.getTracker(context);
-    return `${prefix}:${key}`;
+  protected generateKey(context: ExecutionContext, suffix: string): string {
+    return suffix;
   }
 
-  async getHandlerLimit(context: ExecutionContext): Promise<number> {
-    const key = await this.getTracker(context);
-    const keyDetails = await this.tokensService.validateKey(key);
-    return keyDetails.rateLimit;
-  }
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const tracker = await this.getTracker(context);
+    const keyDetails = await this.tokensService.validateKey(tracker);
+    if (
+      !keyDetails ||
+      keyDetails.disabled ||
+      new Date(keyDetails.expiration) < new Date()
+    ) {
+      throw new UnauthorizedException('Invalid or expired API key');
+    }
 
-  async handleRequest(
-    context: ExecutionContext,
-    limit: number,
-    ttl: number,
-    throttler: ThrottlerOptions,
-  ): Promise<boolean> {
-    const key = this.generateKey(context, '', throttler.name);
+    const limit = keyDetails.rateLimit;
+    const ttl = this.configService.get<number>('THROTTLER_TTL') || 60000;
+
+    const key = this.generateKey(context, tracker);
+
     const { totalHits } = await this.storageService.increment(key, ttl);
+
     const limitReached = totalHits > limit;
     if (limitReached) {
       throw new ThrottlerException();

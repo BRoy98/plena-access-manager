@@ -19,6 +19,7 @@ async function bootstrap() {
     },
   });
 
+  const defaultPort = configService.get<number>('PORT');
   const port = configService.get<number>('TOKEN_MANAGER_PORT');
   const globalPrefix = 'v1';
 
@@ -26,10 +27,10 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   await app.startAllMicroservices();
-  await app.listen(port);
+  await app.listen(defaultPort || port);
 
   Logger.log(
-    `🚀 Token service is running on: http://localhost:${port}/${globalPrefix}`,
+    `🚀 Token service is running on: http://localhost:${defaultPort || port}/${globalPrefix}`,
   );
 }
 bootstrap();
