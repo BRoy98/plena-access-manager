@@ -36,6 +36,8 @@ import { LoggingModule } from '@logging';
         storage: new ThrottlerStorageRedisService({
           host: config.get<string>('REDIS_HOST'),
           port: config.get<number>('REDIS_PORT'),
+          username: config.get<string>('REDIS_USER'),
+          password: config.get<string>('REDIS_PASSWORD'),
         }),
       }),
     }),
