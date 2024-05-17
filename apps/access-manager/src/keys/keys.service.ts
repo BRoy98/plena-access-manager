@@ -14,8 +14,7 @@ export class KeysService {
   constructor(@InjectModel(Key.name) private keyModel: Model<KeyDocument>) {}
 
   async create(createKeyDto: CreateKeyDto): Promise<Key> {
-    const createdKey = new this.keyModel(createKeyDto);
-    return createdKey.save();
+    return this.keyModel.create(createKeyDto);
   }
 
   async findAll(): Promise<Key[]> {
@@ -52,6 +51,8 @@ export class KeysService {
       throw new BadRequestException('Key already disabled');
     }
     keyDocument.disabled = true;
-    return keyDocument.save();
+    await keyDocument.save();
+
+    return keyDocument;
   }
 }
