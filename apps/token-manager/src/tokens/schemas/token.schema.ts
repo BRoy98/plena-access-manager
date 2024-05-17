@@ -6,10 +6,10 @@ export type TokenDocument = HydratedDocument<Token>;
 @Schema()
 export class Token {
   @Prop({ required: true })
-  key: string;
+  data: string;
 
   @Prop({ required: true })
-  data: string;
+  userId: string;
 
   @Prop({ required: true })
   createdAt: Date;

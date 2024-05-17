@@ -57,7 +57,6 @@ export class CustomThrottlerGuard extends ThrottlerGuard {
     if (limitReached) {
       throw new ThrottlerException();
     }
-    console.log('handleRequest', 1);
     return true;
   }
 }

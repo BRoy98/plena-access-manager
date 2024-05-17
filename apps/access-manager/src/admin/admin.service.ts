@@ -9,17 +9,12 @@ export class AdminService {
   async login(username: string, password: string): Promise<LoginResponseDto> {
     // For simplicity, I'm assuming a hardcoded username and password.
 
-    let payload = {};
     if (username === 'admin' && password === 'password') {
-      payload = { username, role: 'ADMIN' };
-    } else if (username === 'user' && password === 'password') {
-      payload = { username, role: 'USER' };
-    } else {
-      throw new UnauthorizedException('Invalid credentials');
+      const payload = { username, role: 'ADMIN' };
+      return {
+        accessToken: this.jwtService.sign(payload),
+      };
     }
-
-    return {
-      accessToken: this.jwtService.sign(payload),
-    };
+    throw new UnauthorizedException('Invalid credentials');
   }
 }

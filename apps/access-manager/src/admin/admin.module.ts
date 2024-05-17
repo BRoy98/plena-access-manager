@@ -8,7 +8,6 @@ import { AdminController } from './admin.controller';
 
 @Module({
   imports: [
-    ConfigModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -21,6 +20,6 @@ import { AdminController } from './admin.controller';
   ],
   controllers: [AdminController],
   providers: [JwtStrategy, AdminService],
-  exports: [JwtModule, AdminService],
+  exports: [AdminService],
 })
 export class AdminModule {}

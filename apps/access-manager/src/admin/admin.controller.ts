@@ -1,5 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get } from '@nestjs/common';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { Controller, Post, Body } from '@nestjs/common';
 import { AdminService } from './admin.service';
 
 @Controller('admin')
@@ -9,11 +8,5 @@ export class AdminController {
   @Post('login')
   async login(@Body() body: { username: string; password: string }) {
     return this.adminService.login(body.username, body.password);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('check')
-  checkAdmin() {
-    return { message: 'Admin verified' };
   }
 }

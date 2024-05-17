@@ -22,6 +22,16 @@ export class TokensService {
     this.client = this.redisPubSubService.getClient();
   }
 
+  async requestToken(requestTokenDto: RequestTokenDto): Promise<Token> {
+    const keyDetails = await this.validateKey(requestTokenDto.key);
+
+    if (keyDetails.disabled) {
+      throw new BadRequestException('Key is disabled');
+    }
+
+    return this.findTokenByUserId(keyDetails.userId);
+  }
+
   async validateKey(key: string): Promise<any> {
     try {
       const response = await firstValueFrom(
@@ -37,21 +47,11 @@ export class TokensService {
     }
   }
 
-  async findTokenByKey(key: string): Promise<Token> {
-    const token = await this.tokenModel.findOne({ key }).exec();
+  async findTokenByUserId(userId: string): Promise<Token> {
+    const token = await this.tokenModel.findOne({ userId }).exec();
     if (!token) {
       throw new NotFoundException('Token not found');
     }
     return token;
-  }
-
-  async requestToken(requestTokenDto: RequestTokenDto): Promise<Token> {
-    const keyDetails = await this.validateKey(requestTokenDto.key);
-
-    if (keyDetails.disabled) {
-      throw new BadRequestException('Key is disabled');
-    }
-
-    return this.findTokenByKey(requestTokenDto.key);
   }
 }

@@ -1,9 +1,15 @@
-import { IsNotEmpty, IsNumber, IsString, IsDateString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsDateString,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateKeyDto {
   @IsString()
-  @IsNotEmpty()
-  readonly key: string;
+  @IsOptional()
+  readonly key?: string;
 
   @IsNumber()
   @IsNotEmpty()

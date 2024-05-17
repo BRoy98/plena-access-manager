@@ -27,7 +27,7 @@ async function bootstrap() {
   await app.listen(port);
 
   Logger.log(
-    `🚀 Deployment service is running on: http://localhost:${port}/${globalPrefix}`,
+    `🚀 Access manager service is running on: http://localhost:${port}/${globalPrefix}`,
   );
 }
 bootstrap();

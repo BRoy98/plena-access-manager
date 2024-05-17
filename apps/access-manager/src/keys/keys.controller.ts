@@ -7,6 +7,7 @@ import {
   Delete,
   Put,
   UseGuards,
+  Headers,
 } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { CreateKeyDto } from './dto/request/create-key.request.dto';
@@ -14,20 +15,32 @@ import { UpdateKeyDto } from './dto/request/update-key.request.dto';
 import { KeysService } from './keys.service';
 import { Key } from './schemas/key.schema';
 import { JwtAuthGuard } from '../admin/jwt-auth.guard';
-import { GetKeyDetailsDto } from './dto/request/get-key-details.request.dto';
+import { ApiKeyAuthGuard } from '../common/auth-user.guard';
 
 @Controller('keys')
 export class KeysController {
   constructor(private readonly keysService: KeysService) {}
 
+  @UseGuards(ApiKeyAuthGuard)
+  @Get('details')
+  getKeyDetails(@Headers('x-api-key') key: string): Promise<Key> {
+    return this.keysService.getKeyDetails(key);
+  }
+
+  @UseGuards(ApiKeyAuthGuard)
+  @Post('disable')
+  disableKey(@Headers('x-api-key') key: string): Promise<Key> {
+    return this.keysService.disableKey(key);
+  }
+
   @UseGuards(JwtAuthGuard)
-  @Post()
+  @Post('generate')
   create(@Body() createKeyDto: CreateKeyDto): Promise<Key> {
     return this.keysService.create(createKeyDto);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get()
+  @Get('list')
   findAll(): Promise<Key[]> {
     return this.keysService.findAll();
   }
@@ -51,16 +64,6 @@ export class KeysController {
   @Delete(':id')
   remove(@Param('id') id: string): Promise<Key> {
     return this.keysService.remove(id);
-  }
-
-  @Post('details')
-  getKeyDetails(@Body() getKeyDetailsDto: GetKeyDetailsDto): Promise<Key> {
-    return this.keysService.getKeyDetails(getKeyDetailsDto);
-  }
-
-  @Post(':id/disable')
-  disableKey(@Param('id') id: string): Promise<Key> {
-    return this.keysService.disableKey({ key: id });
   }
 
   @MessagePattern({ cmd: 'validate_key' })

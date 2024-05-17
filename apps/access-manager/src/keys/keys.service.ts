@@ -1,15 +1,13 @@
 import {
-  BadRequestException,
   Injectable,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateKeyDto } from './dto/request/create-key.request.dto';
 import { UpdateKeyDto } from './dto/request/update-key.request.dto';
 import { Key, KeyDocument } from './schemas/key.schema';
-import { DisableKeyDto } from './dto/request/disable-key.request.dto';
-import { GetKeyDetailsDto } from './dto/request/get-key-details.request.dto';
 
 @Injectable()
 export class KeysService {
@@ -21,11 +19,11 @@ export class KeysService {
   }
 
   async findAll(): Promise<Key[]> {
-    return this.keyModel.find().exec();
+    return this.keyModel.find();
   }
 
   async findOne(id: string): Promise<Key> {
-    return this.keyModel.findById(id).exec();
+    return this.keyModel.findById(id);
   }
 
   async update(id: string, updateKeyDto: UpdateKeyDto): Promise<Key> {
@@ -44,12 +42,12 @@ export class KeysService {
     return keyDocument;
   }
 
-  async getKeyDetails(getKeyDetailsDto: GetKeyDetailsDto): Promise<Key> {
-    return this.findByKey(getKeyDetailsDto.key);
+  async getKeyDetails(key: string): Promise<Key> {
+    return this.findByKey(key);
   }
 
-  async disableKey(disableKeyDto: DisableKeyDto): Promise<Key> {
-    const keyDocument = await this.findByKey(disableKeyDto.key);
+  async disableKey(key: string): Promise<Key> {
+    const keyDocument = await this.findByKey(key);
     if (keyDocument.disabled) {
       throw new BadRequestException('Key already disabled');
     }
